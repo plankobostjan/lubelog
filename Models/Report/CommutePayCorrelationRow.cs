@@ -9,5 +9,6 @@
         public decimal GasCostTotal { get; set; }
         public decimal TotalVehicleCost { get; set; }
         public decimal NetDifference { get { return CommutePayTotal - TotalVehicleCost; } }
+        public decimal NetDifferenceVsGasOnly { get { return CommutePayTotal - GasCostTotal; } }
     }
 }

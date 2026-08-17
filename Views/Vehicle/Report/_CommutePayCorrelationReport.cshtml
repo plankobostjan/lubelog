@@ -9,6 +9,7 @@
     var totalGasCost = Model.Sum(x => x.GasCostTotal);
     var totalVehicleCost = Model.Sum(x => x.TotalVehicleCost);
     var totalNet = totalCommutePay - totalVehicleCost;
+    var totalNetVsGas = totalCommutePay - totalGasCost;
 }
 <div class="modal-header">
     <h5 class="modal-title">@translator.Translate(userLanguage, "Commute Pay vs. Vehicle Cost")</h5>
@@ -21,7 +22,11 @@
     }
     else
     {
-        <table class="table table-hover table-sm">
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" role="switch" id="commutePayNetModeToggle" onchange="toggleCommutePayNetMode()">
+            <label class="form-check-label" for="commutePayNetModeToggle">@translator.Translate(userLanguage, "Subtract Gas Cost only (instead of Total Vehicle Cost)")</label>
+        </div>
+        <table class="table table-hover table-sm" id="commutePayCorrelationTable">
             <thead>
                 <tr>
                     <th>@translator.Translate(userLanguage, "Month")</th>
@@ -39,7 +44,7 @@
                         <td>@row.CommutePayTotal.ToString("C")</td>
                         <td>@row.GasCostTotal.ToString("C")</td>
                         <td>@row.TotalVehicleCost.ToString("C")</td>
-                        <td class="@(row.NetDifference >= 0 ? "text-success" : "text-danger")"><strong>@row.NetDifference.ToString("C")</strong></td>
+                        <td class="commute-pay-net-cell @(row.NetDifference >= 0 ? "text-success" : "text-danger")" data-net-total="@row.NetDifference.ToString("C")" data-net-total-positive="@(row.NetDifference >= 0 ? "true" : "false")" data-net-gas="@row.NetDifferenceVsGasOnly.ToString("C")" data-net-gas-positive="@(row.NetDifferenceVsGasOnly >= 0 ? "true" : "false")"><strong>@row.NetDifference.ToString("C")</strong></td>
                     </tr>
                 }
             </tbody>
@@ -49,10 +54,26 @@
                     <th>@totalCommutePay.ToString("C")</th>
                     <th>@totalGasCost.ToString("C")</th>
                     <th>@totalVehicleCost.ToString("C")</th>
-                    <th class="@(totalNet >= 0 ? "text-success" : "text-danger")">@totalNet.ToString("C")</th>
+                    <th class="commute-pay-net-cell @(totalNet >= 0 ? "text-success" : "text-danger")" data-net-total="@totalNet.ToString("C")" data-net-total-positive="@(totalNet >= 0 ? "true" : "false")" data-net-gas="@totalNetVsGas.ToString("C")" data-net-gas-positive="@(totalNetVsGas >= 0 ? "true" : "false")">@totalNet.ToString("C")</th>
                 </tr>
             </tfoot>
         </table>
-        <p class="text-muted small">@translator.Translate(userLanguage, "Net = Commute Pay minus Total Vehicle Cost for that month. Green means your commute pay covered your vehicle costs that month; red means it didn't. Commute Pay is attributed to the month it covers (i.e. a payment received in month N is counted toward month N-1's costs).")</p>
+        <p class="text-muted small">@translator.Translate(userLanguage, "Net = Commute Pay minus the selected cost basis for that month. Green means your commute pay covered it that month; red means it didn't. Commute Pay is attributed to the month it covers (i.e. a payment received in month N is counted toward month N-1's costs).")</p>
+        <script>
+            function toggleCommutePayNetMode() {
+                var useGasOnly = $("#commutePayNetModeToggle").is(":checked");
+                $("#commutePayCorrelationTable .commute-pay-net-cell").each(function () {
+                    var cell = $(this);
+                    var text = useGasOnly ? cell.attr('data-net-gas') : cell.attr('data-net-total');
+                    var isPositive = (useGasOnly ? cell.attr('data-net-gas-positive') : cell.attr('data-net-total-positive')) == "true";
+                    cell.removeClass('text-success text-danger').addClass(isPositive ? 'text-success' : 'text-danger');
+                    if (cell.find('strong').length > 0) {
+                        cell.find('strong').text(text);
+                    } else {
+                        cell.text(text);
+                    }
+                });
+            }
+        </script>
     }
 </div>
