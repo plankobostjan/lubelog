@@ -39,8 +39,8 @@ namespace CarCareTracker.Controllers
                 MonthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month),
                 Year = m.Year,
                 CommutePayTotal = commutePayRecords.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Amount),
-                GasCostTotal = gasCostEntries.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Cost),
-                TotalVehicleCost = allCostEntries.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Cost)
+                GasCostTotal = gasCostEntries.Where(x => x.Date.Year == (m.Month == 1 ? m.Year - 1 : m.Year) && x.Date.Month == (m.Month == 1 ? 12 : m.Month - 1)).Sum(x => x.Cost),
+                TotalVehicleCost = allCostEntries.Where(x => x.Date.Year == (m.Month == 1 ? m.Year - 1 : m.Year) && x.Date.Month == (m.Month == 1 ? 12 : m.Month - 1)).Sum(x => x.Cost)
             }).ToList();
             return PartialView("Report/_CommutePayCorrelationReport", result);
         }
@@ -161,7 +161,7 @@ namespace CarCareTracker.Controllers
             //get collaborators
             var collaborators = _userLogic.GetCollaboratorsForVehicle(vehicleId);
             var userCanModify = _userLogic.UserCanDirectlyEditVehicle(GetUserID(), vehicleId);
-            viewModel.Collaborators = new VehicleCollaboratorViewModel { CanModifyCollaborators = userCanModify, Collaborators = collaborators};
+            viewModel.Collaborators = new VehicleCollaboratorViewModel { CanModifyCollaborators = userCanModify, Collaborators = collaborators };
             //get MPG per month.
             var mileageData = _gasHelper.GetGasRecordViewModels(gasRecords, userConfig.UseMPG, userConfig.UseUKMPG, vehicleData.IsElectric);
             string preferredFuelMileageUnit = _config.GetUserConfig(User).PreferredGasMileageUnit;
@@ -197,7 +197,8 @@ namespace CarCareTracker.Controllers
                 }
                 averageMPG = newAverageMPG.ToString("F");
             }
-            var mpgViewModel = new MPGForVehicleByMonth {
+            var mpgViewModel = new MPGForVehicleByMonth
+            {
                 CostData = monthlyMileageData,
                 Unit = invertedFuelMileageUnit ? preferredFuelMileageUnit : fuelEconomyMileageUnit,
                 SortedCostData = (userConfig.UseMPG || invertedFuelMileageUnit) ? monthlyMileageData.OrderByDescending(x => x.Cost).ToList() : monthlyMileageData.OrderBy(x => x.Cost).ToList()
@@ -226,7 +227,7 @@ namespace CarCareTracker.Controllers
             };
             return PartialView("Report/_Collaborators", viewModel);
         }
-        [TypeFilter(typeof(StrictCollaboratorFilter), Arguments = new object[] {false, true})]
+        [TypeFilter(typeof(StrictCollaboratorFilter), Arguments = new object[] { false, true })]
         [HttpPost]
         public IActionResult AddCollaboratorsToVehicle(int vehicleId, string username)
         {
@@ -553,20 +554,21 @@ namespace CarCareTracker.Controllers
         }
         public IActionResult GetReportParameters()
         {
-            var viewModel = new ReportParameter() { 
+            var viewModel = new ReportParameter()
+            {
                 VisibleColumns = new List<string> {
                     nameof(GenericReportModel.DataType),
                     nameof(GenericReportModel.Date),
                     nameof(GenericReportModel.Odometer),
                     nameof(GenericReportModel.Description),
                     nameof(GenericReportModel.Cost),
-                    nameof(GenericReportModel.Notes) 
+                    nameof(GenericReportModel.Notes)
                 }
             };
             //get all extra fields from service records, repairs, upgrades, and tax records.
             var recordTypes = new List<int>() { 0, 1, 3, 4 };
             var extraFields = new List<string>();
-            foreach(int recordType in recordTypes)
+            foreach (int recordType in recordTypes)
             {
                 extraFields.AddRange(_extraFieldDataAccess.GetExtraFieldsById(recordType).ExtraFields.Select(x => x.Name));
             }
@@ -890,7 +892,7 @@ namespace CarCareTracker.Controllers
                 var odometerRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(vehicleId);
                 allCosts.AddRange(_reportHelper.GetOdometerRecordSum(odometerRecords, year, true));
             }
-            var groupedRecord = allCosts.GroupBy(x => new { x.MonthName, x.MonthId, x.Year }).OrderByDescending(x=>x.Key.Year).Select(x => new CostForVehicleByMonth
+            var groupedRecord = allCosts.GroupBy(x => new { x.MonthName, x.MonthId, x.Year }).OrderByDescending(x => x.Key.Year).Select(x => new CostForVehicleByMonth
             {
                 Year = x.Key.Year,
                 MonthName = x.Key.MonthName,
