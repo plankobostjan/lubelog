@@ -1,0 +1,58 @@
+﻿@using CarCareTracker.Helper
+@inject IConfigHelper config
+@inject ITranslationHelper translator
+@model List<CommutePayCorrelationRow>
+@{
+    var userConfig = config.GetUserConfig(User);
+    var userLanguage = userConfig.UserLanguage;
+    var totalCommutePay = Model.Sum(x => x.CommutePayTotal);
+    var totalGasCost = Model.Sum(x => x.GasCostTotal);
+    var totalVehicleCost = Model.Sum(x => x.TotalVehicleCost);
+    var totalNet = totalCommutePay - totalVehicleCost;
+}
+<div class="modal-header">
+    <h5 class="modal-title">@translator.Translate(userLanguage, "Commute Pay vs. Vehicle Cost")</h5>
+    <button type="button" class="btn-close" onclick="hideDataTable()" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    @if (!Model.Any())
+    {
+        <p class="text-muted">@translator.Translate(userLanguage, "No Commute Pay or vehicle cost records found for this period.")</p>
+    }
+    else
+    {
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>@translator.Translate(userLanguage, "Month")</th>
+                    <th>@translator.Translate(userLanguage, "Commute Pay")</th>
+                    <th>@translator.Translate(userLanguage, "Gas Cost")</th>
+                    <th>@translator.Translate(userLanguage, "Total Vehicle Cost")</th>
+                    <th>@translator.Translate(userLanguage, "Net")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CommutePayCorrelationRow row in Model)
+                {
+                    <tr>
+                        <td>@row.MonthName @row.Year</td>
+                        <td>@row.CommutePayTotal.ToString("C")</td>
+                        <td>@row.GasCostTotal.ToString("C")</td>
+                        <td>@row.TotalVehicleCost.ToString("C")</td>
+                        <td class="@(row.NetDifference >= 0 ? "text-success" : "text-danger")"><strong>@row.NetDifference.ToString("C")</strong></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-group-divider">
+                    <th>@translator.Translate(userLanguage, "Total")</th>
+                    <th>@totalCommutePay.ToString("C")</th>
+                    <th>@totalGasCost.ToString("C")</th>
+                    <th>@totalVehicleCost.ToString("C")</th>
+                    <th class="@(totalNet >= 0 ? "text-success" : "text-danger")">@totalNet.ToString("C")</th>
+                </tr>
+            </tfoot>
+        </table>
+        <p class="text-muted small">@translator.Translate(userLanguage, "Net = Commute Pay minus Total Vehicle Cost for that month. Green means your commute pay covered your vehicle costs that month; red means it didn't.")</p>
+    }
+</div>

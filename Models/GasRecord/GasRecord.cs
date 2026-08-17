@@ -14,6 +14,7 @@
         /// </summary>
         public decimal Gallons { get; set; }
         public decimal Cost { get; set; }
+        public decimal AverageSpeed { get; set; } = 0;
         public bool IsFillToFull { get; set; } = true;
         public bool MissedFuelUp { get; set; } = false;
         public string Notes { get; set; } = string.Empty;

@@ -150,6 +150,18 @@
                     </div>
                     </li>
                     <li class="dropdown-item" draggable="true" ondragstart="handleTableColumnDragStart(event)" ondragover="handleTableColumnDragOver(event)" ondragend="handleTableColumnDragEnd('GasRecord')">
+                    <div class="list-group-item">
+                        <input class="form-check-input col-visible-toggle" data-column-toggle='averagespeed' onChange="showTableColumns(this, 'GasRecord')" type="checkbox" id="chkCol_AverageSpeed">
+                        <label class="form-check-label stretched-link" for="chkCol_AverageSpeed">@translator.Translate(userLanguage, "Average Speed")</label>
+                    </div>
+                    </li>
+                    <li class="dropdown-item" draggable="true" ondragstart="handleTableColumnDragStart(event)" ondragover="handleTableColumnDragOver(event)" ondragend="handleTableColumnDragEnd('GasRecord')">
+                    <div class="list-group-item">
+                        <input class="form-check-input col-visible-toggle" data-column-toggle='timedriven' onChange="showTableColumns(this, 'GasRecord')" type="checkbox" id="chkCol_TimeDriven">
+                        <label class="form-check-label stretched-link" for="chkCol_TimeDriven">@translator.Translate(userLanguage, "Time Driven")</label>
+                    </div>
+                    </li>
+                    <li class="dropdown-item" draggable="true" ondragstart="handleTableColumnDragStart(event)" ondragover="handleTableColumnDragOver(event)" ondragend="handleTableColumnDragEnd('GasRecord')">
                         <div class="list-group-item">
                             <input class="form-check-input col-visible-toggle" data-column-toggle='cost' onChange="showTableColumns(this, 'GasRecord')" type="checkbox" id="chkCol_Cost" checked>
                             <label class="form-check-label stretched-link" for="chkCol_Cost">@translator.Translate(userLanguage, "Cost")</label>
@@ -205,6 +217,8 @@
                     <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate @(Model.UseKwh ? "" : "d-none")" style='display:none;' data-column="startsoc">@translator.Translate(userLanguage, "Start SoC")</th>
                     <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate @(Model.UseKwh ? "" : "d-none")" style='display:none;' data-column="endsoc">@translator.Translate(userLanguage, "End SoC")</th>
                     <th scope="col" class="col-3 flex-grow-1 flex-shrink-1 text-truncate" data-column="fueleconomy" data-gas="fueleconomy" data-unit="@fuelEconomyUnit" onclick="toggleSort('gas-tab-pane', this)" oncontextmenu="toggleUnits(this)" style="cursor:pointer;">@($"{@translator.Translate(userLanguage, "Fuel Economy")}({fuelEconomyUnit})")</th>
+                    <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="averagespeed">@translator.Translate(userLanguage, "Average Speed")</th>
+                    <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="timedriven">@translator.Translate(userLanguage, "Time Driven")</th>
                     <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" data-column="cost" onclick="toggleSort('gas-tab-pane', this)" style="cursor:pointer;">@translator.Translate(userLanguage, "Cost")</th>
                     <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" data-column="unitcost" onclick="toggleSort('gas-tab-pane', this)" style="cursor:pointer;">@translator.Translate(userLanguage, "Unit Cost")</th>
                     <th scope="col" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="attachments">@translator.Translate(userLanguage, "Attachments")</th>
@@ -226,6 +240,8 @@
                         <td data-label="@translator.Translate(userLanguage, "Start SoC")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate @(Model.UseKwh ? "" : "d-none")" style='display:none;' data-column="startsoc">@gasRecord.StartingSoc.ToString("0'%'")</td>
                         <td data-label="@translator.Translate(userLanguage, "End SoC")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate @(Model.UseKwh ? "" : "d-none")" style='display:none;' data-column="endsoc">@gasRecord.EndingSoc.ToString("0'%'")</td>
                         <td data-label="@($"{@translator.Translate(userLanguage, "Fuel Economy")}({fuelEconomyUnit})")" class="col-3 flex-grow-1 flex-shrink-1 text-truncate" data-column="fueleconomy" data-gas-type="fueleconomy" data-aggregated='@(gasRecord.IncludeInAverage.ToString().ToLower())'>@(gasRecord.MilesPerGallon == 0 ? "---" : gasRecord.MilesPerGallon.ToString("F"))</td>
+                        <td data-label="@translator.Translate(userLanguage, "Average Speed")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="averagespeed">@(gasRecord.AverageSpeed == default ? "---" : gasRecord.AverageSpeed.ToString("F"))</td>
+                        <td data-label="@translator.Translate(userLanguage, "Time Driven")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="timedriven">@(gasRecord.TimeSpentDriving == default ? "---" : $"{(int)gasRecord.TimeSpentDriving}h {(int)((gasRecord.TimeSpentDriving % 1) * 60)}m")</td>
                         <td data-label="@translator.Translate(userLanguage, "Cost")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" data-column="cost" data-record-type="cost">@((hideZero && gasRecord.Cost == default) ? "---" : gasRecord.Cost.ToString(gasCostFormat))</td>
                         <td data-label="@translator.Translate(userLanguage, "Unit Cost")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" data-column="unitcost" data-gas-type="unitcost">@((hideZero && gasRecord.CostPerGallon == default) ? "---" : gasRecord.CostPerGallon.ToString(gasCostFormat))</td>
                         <td data-label="@translator.Translate(userLanguage, "Attachments")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style='display:none;' data-column="attachments">@await Html.PartialAsync("_AttachmentColumn", gasRecord.Files)</td>

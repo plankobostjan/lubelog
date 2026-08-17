@@ -366,6 +366,14 @@ function showDataTable(elemClicked) {
         }
     });
 }
+function showCommutePayReport() {
+    var vehicleId = GetVehicleId().vehicleId;
+    var year = getYear();
+    $.get(`/Vehicle/GetCommutePayCorrelationReport?vehicleId=${vehicleId}`, { year: year }, function (data) {
+        $("#vehicleDataTableModalContent").html(data);
+        $("#vehicleDataTableModal").modal('show');
+    });
+}
 function hideDataTable() {
     $("#vehicleDataTableModal").modal('hide');
 }

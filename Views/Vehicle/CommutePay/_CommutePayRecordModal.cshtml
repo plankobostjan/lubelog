@@ -1,0 +1,70 @@
+﻿@using CarCareTracker.Helper
+@inject IConfigHelper config
+@inject ITranslationHelper translator
+@model CommutePayRecordInput
+@{
+    var isNew = Model.Id == 0;
+    var userConfig = config.GetUserConfig(User);
+    var userLanguage = userConfig.UserLanguage;
+}
+<div class="modal-header">
+    <h5 class="modal-title">@(isNew? translator.Translate(userLanguage, "Add New Commute Pay Record") : translator.Translate(userLanguage, "Edit Commute Pay Record"))<a class="ms-1 link-body-emphasis" onclick="@(isNew ? $"createQR('add', '')" : $"createQR('id', {Model.Id})")"><i class="bi bi-qr-code"></i></a><small style="display:none; @(isNew ? "" : "cursor:pointer;")" class="cached-banner ms-2 text-warning" onclick='@(isNew ? "" : $"showEditCommutePayRecordModal({Model.Id}, true)")'>@translator.Translate(userLanguage, "Unsaved Changes")</small></h5>
+    <button type="button" class="btn-close" onclick="hideAddCommutePayRecordModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body" onkeydown="handleEnter(this)">
+    <form>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-6 col-12">
+                    <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+                    <label for="commutePayRecordDate">@translator.Translate(userLanguage,"Date")</label>
+                    <div class="input-group">
+                        <input type="text" id="commutePayRecordDate" class="form-control" placeholder="@translator.Translate(userLanguage,"Date pay was received")" value="@Model.Date">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+                    <label for="commutePayRecordDescription">@translator.Translate(userLanguage,"Description")</label>
+                    <input type="text" id="commutePayRecordDescription" class="form-control" placeholder="@translator.Translate(userLanguage,"Description(i.e. Paycheck commute allowance)")" value="@Model.Description">
+                    <label for="commutePayRecordAmount">@translator.Translate(userLanguage,"Amount")</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)" id="commutePayRecordAmount" class="form-control" placeholder="@translator.Translate(userLanguage,"Amount received")" value="@(isNew? "" : Model.Amount)">
+                    <label for="commutePayRecordTag">@translator.Translate(userLanguage,"Tags(optional)")</label>
+                    <select multiple class="form-select" id="commutePayRecordTag">
+                        @foreach (string tag in Model.Tags)
+                        {
+                            <!option value="@tag">@tag</!option>
+                        }
+                    </select>
+                    @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+                </div>
+                <div class="col-md-6 col-12">
+                    <label for="commutePayRecordNotes">@translator.Translate(userLanguage,"Notes(optional)")<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
+                    <textarea id="commutePayRecordNotes" class="form-control" rows="5">@Model.Notes</textarea>
+                    <div>
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    @if (!isNew)
+    {
+        <button type="button" class="btn btn-danger" onclick="deleteCommutePayRecord(@Model.Id)" style="margin-right:auto;">@translator.Translate(userLanguage,"Delete")</button>
+    }
+    <button type="button" class="btn btn-secondary" onclick="hideAddCommutePayRecordModal()">@translator.Translate(userLanguage,"Cancel")</button>
+    @if (isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="saveCommutePayRecordToVehicle()">@translator.Translate(userLanguage,"Add New Commute Pay Record")</button>
+    }
+    else if (!isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="saveCommutePayRecordToVehicle(true)">@translator.Translate(userLanguage,"Edit Commute Pay Record")</button>
+    }
+</div>
+<script>
+    function getCommutePayRecordModelData() {
+        return { id: @Model.Id }
+    }
+</script>

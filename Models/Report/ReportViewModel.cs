@@ -12,5 +12,6 @@
         public bool CustomWidgetsConfigured { get; set; } = false;
         public List<ImportMode> AvailableMetrics { get; set; } = new List<ImportMode>();
         public bool HasVehicleImageMap { get; set; } = false;
+        public bool HasCommutePayRecords { get; set; } = false;
     }
 }

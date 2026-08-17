@@ -11,6 +11,40 @@ namespace CarCareTracker.Controllers
     {
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
+        public IActionResult GetCommutePayCorrelationReport(int vehicleId, int year = 0)
+        {
+            var vehicleRecords = _vehicleLogic.GetVehicleRecords(vehicleId);
+            var commutePayRecords = vehicleRecords.CommutePayRecords;
+            var gasCostEntries = vehicleRecords.GasRecords.Select(x => new { x.Date, x.Cost }).ToList();
+            var allCostEntries = new List<(DateTime Date, decimal Cost)>();
+            allCostEntries.AddRange(vehicleRecords.ServiceRecords.Select(x => (x.Date, x.Cost)));
+            allCostEntries.AddRange(vehicleRecords.CollisionRecords.Select(x => (x.Date, x.Cost)));
+            allCostEntries.AddRange(vehicleRecords.UpgradeRecords.Select(x => (x.Date, x.Cost)));
+            allCostEntries.AddRange(vehicleRecords.TaxRecords.Select(x => (x.Date, x.Cost)));
+            allCostEntries.AddRange(vehicleRecords.InsuranceRecords.Select(x => (x.Date, x.Cost)));
+            allCostEntries.AddRange(gasCostEntries.Select(x => (x.Date, x.Cost)));
+            if (year != default)
+            {
+                commutePayRecords = commutePayRecords.Where(x => x.Date.Year == year).ToList();
+                gasCostEntries = gasCostEntries.Where(x => x.Date.Year == year).ToList();
+                allCostEntries = allCostEntries.Where(x => x.Date.Year == year).ToList();
+            }
+            var months = commutePayRecords.Select(x => new { x.Date.Year, x.Date.Month })
+                .Union(allCostEntries.Select(x => new { x.Date.Year, x.Date.Month }))
+                .Distinct()
+                .OrderBy(x => x.Year).ThenBy(x => x.Month);
+            var result = months.Select(m => new CommutePayCorrelationRow
+            {
+                MonthId = m.Month,
+                MonthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m.Month),
+                Year = m.Year,
+                CommutePayTotal = commutePayRecords.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Amount),
+                GasCostTotal = gasCostEntries.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Cost),
+                TotalVehicleCost = allCostEntries.Where(x => x.Date.Year == m.Year && x.Date.Month == m.Month).Sum(x => x.Cost)
+            }).ToList();
+            return PartialView("Report/_CommutePayCorrelationReport", result);
+        }
+        [HttpGet]
         public IActionResult GetReportPartialView(int vehicleId)
         {
             //get records
@@ -85,6 +119,7 @@ namespace CarCareTracker.Controllers
             {
                 viewModel.AvailableMetrics.Add(ImportMode.InsuranceRecord);
             }
+            viewModel.HasCommutePayRecords = vehicleRecords.CommutePayRecords.Any();
 
             //get reminders
             var reminders = GetRemindersAndUrgency(vehicleId, DateTime.Now);

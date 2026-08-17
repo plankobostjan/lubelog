@@ -35,6 +35,7 @@ namespace CarCareTracker.Logic
         private readonly IUpgradeRecordDataAccess _upgradeRecordDataAccess;
         private readonly ITaxRecordDataAccess _taxRecordDataAccess;
         private readonly IInsuranceRecordDataAccess _insuranceRecordDataAccess;
+        private readonly ICommutePayRecordDataAccess _commutePayRecordDataAccess;
         private readonly IOdometerRecordDataAccess _odometerRecordDataAccess;
         private readonly IReminderRecordDataAccess _reminderRecordDataAccess;
         private readonly IPlanRecordDataAccess _planRecordDataAccess;
@@ -55,6 +56,7 @@ namespace CarCareTracker.Logic
             IUpgradeRecordDataAccess upgradeRecordDataAccess,
             ITaxRecordDataAccess taxRecordDataAccess,
             IInsuranceRecordDataAccess insuranceRecordDataAccess,
+            ICommutePayRecordDataAccess commutePayRecordDataAccess,
             IOdometerRecordDataAccess odometerRecordDataAccess,
             IReminderRecordDataAccess reminderRecordDataAccess,
             IPlanRecordDataAccess planRecordDataAccess,
@@ -74,6 +76,7 @@ namespace CarCareTracker.Logic
             _upgradeRecordDataAccess = upgradeRecordDataAccess;
             _taxRecordDataAccess = taxRecordDataAccess;
             _insuranceRecordDataAccess = insuranceRecordDataAccess;
+            _commutePayRecordDataAccess = commutePayRecordDataAccess;
             _odometerRecordDataAccess = odometerRecordDataAccess;
             _planRecordDataAccess = planRecordDataAccess;
             _reminderRecordDataAccess = reminderRecordDataAccess;
@@ -96,6 +99,7 @@ namespace CarCareTracker.Logic
                 CollisionRecords = _collisionRecordDataAccess.GetCollisionRecordsByVehicleId(vehicleId),
                 TaxRecords = _taxRecordDataAccess.GetTaxRecordsByVehicleId(vehicleId),
                 InsuranceRecords = _insuranceRecordDataAccess.GetInsuranceRecordsByVehicleId(vehicleId),
+                CommutePayRecords = _commutePayRecordDataAccess.GetCommutePayRecordsByVehicleId(vehicleId),
                 UpgradeRecords = _upgradeRecordDataAccess.GetUpgradeRecordsByVehicleId(vehicleId),
                 OdometerRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(vehicleId),
             };
@@ -662,6 +666,7 @@ namespace CarCareTracker.Logic
                 vehicleDocuments.AddRange(_upgradeRecordDataAccess.GetUpgradeRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
                 vehicleDocuments.AddRange(_taxRecordDataAccess.GetTaxRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
                 vehicleDocuments.AddRange(_insuranceRecordDataAccess.GetInsuranceRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
+                vehicleDocuments.AddRange(_commutePayRecordDataAccess.GetCommutePayRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
                 vehicleDocuments.AddRange(_gasRecordDataAccess.GetGasRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
                 vehicleDocuments.AddRange(_noteDataAccess.GetNotesByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
                 vehicleDocuments.AddRange(_odometerRecordDataAccess.GetOdometerRecordsByVehicleId(vehicle.Id).SelectMany(x => x.Files).Select(y => Path.GetFileName(y.Location)));
@@ -687,6 +692,7 @@ namespace CarCareTracker.Logic
                 _collisionRecordDataAccess.DeleteAllCollisionRecordsByVehicleId(vehicleId) &&
                 _taxRecordDataAccess.DeleteAllTaxRecordsByVehicleId(vehicleId) &&
                 _insuranceRecordDataAccess.DeleteAllInsuranceRecordsByVehicleId(vehicleId) &&
+                _commutePayRecordDataAccess.DeleteAllCommutePayRecordsByVehicleId(vehicleId) &&
                 _noteDataAccess.DeleteAllNotesByVehicleId(vehicleId) &&
                 _reminderRecordDataAccess.DeleteAllReminderRecordsByVehicleId(vehicleId) &&
                 _upgradeRecordDataAccess.DeleteAllUpgradeRecordsByVehicleId(vehicleId) &&

@@ -16,6 +16,7 @@
         VehicleRecord = 11,
         InspectionRecord = 12,
         EquipmentRecord = 13,
-        InsuranceRecord = 14
+        InsuranceRecord = 14,
+        CommutePayRecord = 15
     }
 }

@@ -185,6 +185,22 @@ namespace CarCareTracker.Models
                 Action = $"{userName} {GetFriendlyActionType(actionType)} Description: {insuranceRecord.Description}"
             };
         }
+        public static WebHookPayload FromCommutePayRecord(CommutePayRecord commutePayRecord, string actionType, string userName)
+        {
+            Dictionary<string, string> payloadDictionary = new Dictionary<string, string>();
+            payloadDictionary.Add("user", userName);
+            payloadDictionary.Add("description", commutePayRecord.Description);
+            payloadDictionary.Add("vehicleId", commutePayRecord.VehicleId.ToString());
+            payloadDictionary.Add("amount", commutePayRecord.Amount.ToString("F2"));
+            return new WebHookPayload
+            {
+                Type = actionType,
+                Data = payloadDictionary,
+                VehicleId = commutePayRecord.VehicleId.ToString(),
+                Username = userName,
+                Action = $"{userName} {GetFriendlyActionType(actionType)} Description: {commutePayRecord.Description}"
+            };
+        }
         public static WebHookPayload FromEquipmentRecord(EquipmentRecord equipmentRecord, string actionType, string userName)
         {
             Dictionary<string, string> payloadDictionary = new Dictionary<string, string>();

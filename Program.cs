@@ -52,6 +52,7 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["POSTGRES_CONNECTION"])){
     builder.Services.AddSingleton<ICollisionRecordDataAccess, PGCollisionRecordDataAccess>();
     builder.Services.AddSingleton<ITaxRecordDataAccess, PGTaxRecordDataAccess>();
     builder.Services.AddSingleton<IInsuranceRecordDataAccess, PGInsuranceRecordDataAccess>();
+    builder.Services.AddSingleton<ICommutePayRecordDataAccess, PGCommutePayRecordDataAccess>();
     builder.Services.AddSingleton<IReminderRecordDataAccess, PGReminderRecordDataAccess>();
     builder.Services.AddSingleton<IUpgradeRecordDataAccess, PGUpgradeRecordDataAccess>();
     builder.Services.AddSingleton<IOdometerRecordDataAccess, PGOdometerRecordDataAccess>();
@@ -79,6 +80,7 @@ else
     builder.Services.AddSingleton<ICollisionRecordDataAccess, CollisionRecordDataAccess>();
     builder.Services.AddSingleton<ITaxRecordDataAccess, TaxRecordDataAccess>();
     builder.Services.AddSingleton<IInsuranceRecordDataAccess, InsuranceRecordDataAccess>();
+    builder.Services.AddSingleton<ICommutePayRecordDataAccess, CommutePayRecordDataAccess>();
     builder.Services.AddSingleton<IReminderRecordDataAccess, ReminderRecordDataAccess>();
     builder.Services.AddSingleton<IUpgradeRecordDataAccess, UpgradeRecordDataAccess>();
     builder.Services.AddSingleton<IOdometerRecordDataAccess, OdometerRecordDataAccess>();

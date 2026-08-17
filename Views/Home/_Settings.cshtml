@@ -192,6 +192,10 @@
                         <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="EquipmentRecord" id="equipmentRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.EquipmentRecord) ? "checked" : "")>
                         <label class="form-check-label stretched-link" for="equipmentRecordTab">@translator.Translate(userLanguage, "Equipment")</label>
                     </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="CommutePayRecord" id="commutePayRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.CommutePayRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="commutePayRecordTab">@translator.Translate(userLanguage, "Commute Pay")</label>
+                    </li>
                 </ul>
             </div>
             <div class="col-12 col-md-6">
@@ -245,6 +249,7 @@
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.OdometerRecord)) value="OdometerRecord">@translator.Translate(userLanguage, "Odometer")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.InspectionRecord)) value="InspectionRecord">@translator.Translate(userLanguage, "Inspections")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.EquipmentRecord)) value="EquipmentRecord">@translator.Translate(userLanguage, "Equipment")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.CommutePayRecord)) value="CommutePayRecord">@translator.Translate(userLanguage, "Commute Pay")</!option>
                 </select>
             </div>
             <div class="col-12 col-md-6">
@@ -430,6 +435,7 @@
                             <li class="list-group-item" style="order: @Model.UserConfig.TabOrder.FindIndex(x=>x == ImportMode.NoteRecord)" draggable="true" data-tab="@ImportMode.NoteRecord">@translator.Translate(userLanguage, "Notes")</li>
                             <li class="list-group-item" style="order: @Model.UserConfig.TabOrder.FindIndex(x => x == ImportMode.InspectionRecord)" draggable="true" data-tab="@ImportMode.InspectionRecord">@translator.Translate(userLanguage, "Inspections")</li>
                             <li class="list-group-item" style="order: @Model.UserConfig.TabOrder.FindIndex(x => x == ImportMode.EquipmentRecord)" draggable="true" data-tab="@ImportMode.EquipmentRecord">@translator.Translate(userLanguage, "Equipment")</li>
+                            <li class="list-group-item" style="order: @Model.UserConfig.TabOrder.FindIndex(x=>x == ImportMode.CommutePayRecord)" draggable="true" data-tab="@ImportMode.CommutePayRecord">@translator.Translate(userLanguage, "Commute Pay")</li>
                             <li class="list-group-item" style="order: @Model.UserConfig.TabOrder.FindIndex(x=>x == ImportMode.ReminderRecord)" draggable="true" data-tab="@ImportMode.ReminderRecord">@translator.Translate(userLanguage, "Reminder")</li>
                         </ul>
                     </div>

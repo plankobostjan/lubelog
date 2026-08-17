@@ -22,6 +22,7 @@ namespace CarCareTracker.Controllers
         private readonly ICollisionRecordDataAccess _collisionRecordDataAccess;
         private readonly ITaxRecordDataAccess _taxRecordDataAccess;
         private readonly IInsuranceRecordDataAccess _insuranceRecordDataAccess;
+        private readonly ICommutePayRecordDataAccess _commutePayRecordDataAccess;
         private readonly IReminderRecordDataAccess _reminderRecordDataAccess;
         private readonly IUpgradeRecordDataAccess _upgradeRecordDataAccess;
         private readonly ISupplyRecordDataAccess _supplyRecordDataAccess;
@@ -59,6 +60,7 @@ namespace CarCareTracker.Controllers
             ICollisionRecordDataAccess collisionRecordDataAccess,
             ITaxRecordDataAccess taxRecordDataAccess,
             IInsuranceRecordDataAccess insuranceRecordDataAccess,
+            ICommutePayRecordDataAccess commutePayRecordDataAccess,
             IReminderRecordDataAccess reminderRecordDataAccess,
             IUpgradeRecordDataAccess upgradeRecordDataAccess,
             ISupplyRecordDataAccess supplyRecordDataAccess,
@@ -90,6 +92,7 @@ namespace CarCareTracker.Controllers
             _collisionRecordDataAccess = collisionRecordDataAccess;
             _taxRecordDataAccess = taxRecordDataAccess;
             _insuranceRecordDataAccess = insuranceRecordDataAccess;
+            _commutePayRecordDataAccess = commutePayRecordDataAccess;
             _reminderRecordDataAccess = reminderRecordDataAccess;
             _upgradeRecordDataAccess = upgradeRecordDataAccess;
             _supplyRecordDataAccess = supplyRecordDataAccess;
@@ -358,6 +361,19 @@ namespace CarCareTracker.Controllers
                             }
                         }
                         break;
+                    case ImportMode.CommutePayRecord:
+                        {
+                            var results = _commutePayRecordDataAccess.GetCommutePayRecordsByVehicleId(vehicleId);
+                            if (caseSensitive)
+                            {
+                                searchResults.AddRange(results.Where(x => JsonSerializer.Serialize(x, serializerOption).Contains(searchQuery)).Select(x => new SearchResult { Id = x.Id, RecordType = ImportMode.CommutePayRecord, Description = $"{x.Date.ToShortDateString()} - {x.Description}" }));
+                            }
+                            else
+                            {
+                                searchResults.AddRange(results.Where(x => JsonSerializer.Serialize(x, serializerOption).ToLower().Contains(searchQuery)).Select(x => new SearchResult { Id = x.Id, RecordType = ImportMode.CommutePayRecord, Description = $"{x.Date.ToShortDateString()} - {x.Description}" }));
+                            }
+                        }
+                        break;
                     case ImportMode.SupplyRecord:
                         {
                             var results = _supplyRecordDataAccess.GetSupplyRecordsByVehicleId(vehicleId);
@@ -515,6 +531,13 @@ namespace CarCareTracker.Controllers
                             searchResults.AddRange(results.Select(x => new SearchResult { Id = x.Id, RecordType = ImportMode.InsuranceRecord, Description = $"{x.Date.ToShortDateString()} - {x.Description}" }));
                         }
                         break;
+                    case ImportMode.CommutePayRecord:
+                        {
+                            var results = _commutePayRecordDataAccess.GetCommutePayRecordsByVehicleId(vehicleId);
+                            results.RemoveAll(x => !x.Tags.Any(y => tagsFilter.Contains(y)));
+                            searchResults.AddRange(results.Select(x => new SearchResult { Id = x.Id, RecordType = ImportMode.CommutePayRecord, Description = $"{x.Date.ToShortDateString()} - {x.Description}" }));
+                        }
+                        break;
                     case ImportMode.SupplyRecord:
                         {
                             var results = _supplyRecordDataAccess.GetSupplyRecordsByVehicleId(vehicleId);
@@ -602,6 +625,11 @@ namespace CarCareTracker.Controllers
                     {
                         var results = _insuranceRecordDataAccess.GetInsuranceRecordsByVehicleId(vehicleId);
                         return Json(OperationResponse.Conditional(results.Any(x => x.Id == recordId), "", "Insurance Record Not Found"));
+                    }
+                case ImportMode.CommutePayRecord:
+                    {
+                        var results = _commutePayRecordDataAccess.GetCommutePayRecordsByVehicleId(vehicleId);
+                        return Json(OperationResponse.Conditional(results.Any(x => x.Id == recordId), "", "Commute Pay Record Not Found"));
                     }
                 case ImportMode.SupplyRecord:
                     {
@@ -790,6 +818,9 @@ namespace CarCareTracker.Controllers
                     case ImportMode.InsuranceRecord:
                         result = DeleteInsuranceRecordWithChecks(recordId);
                         break;
+                    case ImportMode.CommutePayRecord:
+                        result = DeleteCommutePayRecordWithChecks(recordId);
+                        break;
                     case ImportMode.SupplyRecord:
                         result = DeleteSupplyRecordWithChecks(recordId);
                         break;
@@ -956,6 +987,18 @@ namespace CarCareTracker.Controllers
                             }
                             existingRecord.Id = default;
                             result = _insuranceRecordDataAccess.SaveInsuranceRecordToVehicle(existingRecord);
+                        }
+                        break;
+                    case ImportMode.CommutePayRecord:
+                        {
+                            var existingRecord = _commutePayRecordDataAccess.GetCommutePayRecordById(recordId);
+                            //security check
+                            if (!_userLogic.UserCanEditVehicle(GetUserID(), existingRecord.VehicleId, HouseholdPermission.Edit))
+                            {
+                                return Json(OperationResponse.Failed("Access Denied"));
+                            }
+                            existingRecord.Id = default;
+                            result = _commutePayRecordDataAccess.SaveCommutePayRecordToVehicle(existingRecord);
                         }
                         break;
                     case ImportMode.SupplyRecord:
@@ -1159,6 +1202,21 @@ namespace CarCareTracker.Controllers
                             {
                                 existingRecord.VehicleId = vehicleId;
                                 result = _insuranceRecordDataAccess.SaveInsuranceRecordToVehicle(existingRecord);
+                            }
+                        }
+                        break;
+                    case ImportMode.CommutePayRecord:
+                        {
+                            var existingRecord = _commutePayRecordDataAccess.GetCommutePayRecordById(recordId);
+                            existingRecord.Id = default;
+                            if (!_userLogic.UserCanEditVehicle(GetUserID(), existingRecord.VehicleId, HouseholdPermission.View))
+                            {
+                                continue;
+                            }
+                            foreach (int vehicleId in vehicleIds)
+                            {
+                                existingRecord.VehicleId = vehicleId;
+                                result = _commutePayRecordDataAccess.SaveCommutePayRecordToVehicle(existingRecord);
                             }
                         }
                         break;

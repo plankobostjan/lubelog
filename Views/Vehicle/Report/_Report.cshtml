@@ -108,6 +108,12 @@
                 <div class="d-grid">
                     <button onclick="exportAttachments()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Export Attachments")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                 </div>
+                @if (Model.HasCommutePayRecords)
+                {
+                    <div class="d-grid">
+                        <button onclick="showCommutePayReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Commute Pay vs. Vehicle Cost")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                    </div>
+                }
                 @if (Model.HasVehicleImageMap)
                 {
                     <div class="d-grid">
@@ -157,6 +163,10 @@
             <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#" onclick="generateVehicleHistoryReport()">@translator.Translate(userLanguage, "Vehicle Maintenance Report")</a></li>
                     <li><a class="dropdown-item" href="#" onclick="exportAttachments()">@translator.Translate(userLanguage, "Export Attachments")</a></li>
+                    @if (Model.HasCommutePayRecords)
+                    {
+                        <li><a class="dropdown-item" href="#" onclick="showCommutePayReport()">@translator.Translate(userLanguage, "Commute Pay vs. Vehicle Cost")</a></li>
+                    }
                     @if (Model.HasVehicleImageMap || Model.CustomWidgetsConfigured)
                     {
                         <li><hr class="dropdown-divider"></li>

@@ -86,6 +86,8 @@
                         <input class="form-check-input" type="checkbox" role="switch" id="gasIsMissed" checked="@Model.GasRecord.MissedFuelUp">
                         <label class="form-check-label" for="gasIsMissed">@translator.Translate(userLanguage,"Missed Fuel Up(Skip MPG Calculation)")</label>
                     </div>
+                    <label for="gasRecordAverageSpeed">@translator.Translate(userLanguage,"Average Speed(optional)")</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)" id="gasRecordAverageSpeed" class="form-control" placeholder="@translator.Translate(userLanguage,"Average speed since last fill-up")" value="@(Model.GasRecord.AverageSpeed > 0 ? Model.GasRecord.AverageSpeed.ToString() : "")">
                     <label for="GasRecordCost">@translator.Translate(userLanguage,"Cost")</label>
                     @if (isNew)
                     {

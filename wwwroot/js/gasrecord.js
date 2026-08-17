@@ -89,6 +89,7 @@ function getAndValidateGasRecordValues() {
     let gasCostType = $("#gasCostType").val();
     let gasIsFillToFull = $("#gasIsFillToFull").is(":checked");
     let gasIsMissed = $("#gasIsMissed").is(":checked");
+    let gasAverageSpeed = $("#gasRecordAverageSpeed").val();
     let gasNotes = $("#gasRecordNotes").val();
     let gasTags = $("#gasRecordTag").val();
     let gasStartingSoc = $("#gasSoc").find('[data-handle="min"]').val();
@@ -154,6 +155,7 @@ function getAndValidateGasRecordValues() {
         tags: gasTags,
         isFillToFull: gasIsFillToFull,
         missedFuelUp: gasIsMissed,
+        averageSpeed: gasAverageSpeed.trim() == '' ? 0 : gasAverageSpeed,
         startingSoc: gasStartingSoc,
         endingSoc: gasEndingSoc,
         notes: gasNotes,

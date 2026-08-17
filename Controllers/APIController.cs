@@ -21,6 +21,7 @@ namespace CarCareTracker.Controllers
         private readonly ICollisionRecordDataAccess _collisionRecordDataAccess;
         private readonly ITaxRecordDataAccess _taxRecordDataAccess;
         private readonly IInsuranceRecordDataAccess _insuranceRecordDataAccess;
+        private readonly ICommutePayRecordDataAccess _commutePayRecordDataAccess;
         private readonly IReminderRecordDataAccess _reminderRecordDataAccess;
         private readonly IUpgradeRecordDataAccess _upgradeRecordDataAccess;
         private readonly IOdometerRecordDataAccess _odometerRecordDataAccess;
@@ -53,6 +54,7 @@ namespace CarCareTracker.Controllers
             ICollisionRecordDataAccess collisionRecordDataAccess,
             ITaxRecordDataAccess taxRecordDataAccess,
             IInsuranceRecordDataAccess insuranceRecordDataAccess,
+            ICommutePayRecordDataAccess commutePayRecordDataAccess,
             IReminderRecordDataAccess reminderRecordDataAccess,
             IUpgradeRecordDataAccess upgradeRecordDataAccess,
             IOdometerRecordDataAccess odometerRecordDataAccess,
@@ -80,6 +82,7 @@ namespace CarCareTracker.Controllers
             _collisionRecordDataAccess = collisionRecordDataAccess;
             _taxRecordDataAccess = taxRecordDataAccess;
             _insuranceRecordDataAccess = insuranceRecordDataAccess;
+            _commutePayRecordDataAccess = commutePayRecordDataAccess;
             _reminderRecordDataAccess = reminderRecordDataAccess;
             _upgradeRecordDataAccess = upgradeRecordDataAccess;
             _odometerRecordDataAccess = odometerRecordDataAccess;

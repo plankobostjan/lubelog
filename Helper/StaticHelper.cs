@@ -454,6 +454,8 @@ namespace CarCareTracker.Helper
                     return "bi-currency-dollar";
                 case ImportMode.InsuranceRecord:
                     return "bi-shield-check";
+                case ImportMode.CommutePayRecord:
+                    return "bi-cash-coin";
                 case ImportMode.SupplyRecord:
                     return "bi-shop";
                 case ImportMode.PlanRecord:
@@ -1075,6 +1077,9 @@ namespace CarCareTracker.Helper
                     break;
                 case ImportMode.InsuranceRecord:
                     outputVerbiage = "Insurance Record";
+                    break;
+                case ImportMode.CommutePayRecord:
+                    outputVerbiage = "Commute Pay Record";
                     break;
                 case ImportMode.SupplyRecord:
                     outputVerbiage = "Supply Record";

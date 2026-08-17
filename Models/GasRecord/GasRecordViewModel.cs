@@ -16,6 +16,8 @@
         public decimal Gallons { get; set; }
         public decimal Cost { get; set; }
         public int DeltaMileage { get; set; }
+        public decimal AverageSpeed { get; set; }
+        public decimal TimeSpentDriving { get { return AverageSpeed > 0 ? DeltaMileage / AverageSpeed : 0; } }
         public decimal MilesPerGallon { get; set; }
         public decimal CostPerGallon { get; set; }
         public bool IsFillToFull { get; set; }

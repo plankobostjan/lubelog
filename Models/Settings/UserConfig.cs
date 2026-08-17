@@ -59,6 +59,7 @@
             ImportMode.NoteRecord,
             ImportMode.InspectionRecord,
             ImportMode.EquipmentRecord,
+            ImportMode.CommutePayRecord,
             ImportMode.ReminderRecord
         };
     }
